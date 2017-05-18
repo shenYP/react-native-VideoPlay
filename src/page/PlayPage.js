@@ -13,7 +13,8 @@ import {
     Dimensions,
     TouchableWithoutFeedback,
     TouchableOpacity,
-    Slider
+    Slider,
+    PanResponder
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import Video from 'react-native-video';
@@ -30,11 +31,12 @@ export default class Index extends Base {
         // 初始状态
         this.state = {
             playindex: 0,
-            isPaused: true,//是否暂停
+            isPaused: false,//是否暂停
             resizeMode: "contain",//播放模式
             duration: 0,//视频总时长
             progress: 0,//当前播放进度
             sliderValue: 0.0,//进度条进度
+            volume:0.0,//声音大小
         };
     }
 
@@ -44,6 +46,43 @@ export default class Index extends Base {
 
     componentDidMount() {
         Orientation.lockToLandscape();//只允许横屏
+    }
+
+    componentWillMount() {
+        this._panResponder = PanResponder.create({
+            onStartShouldSetPanResponder: (evt, gestureState) => true,
+            onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+            onMoveShouldSetPanResponder: (evt, gestureState) => true,
+            onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+            onPanResponderMove: this._handlePanResponderMove,
+        });
+    }
+
+    _handlePanResponderMove = (e,gestureState)=>{
+        console.log(gestureState.dy / height)
+
+
+        if(gestureState.x0 < width/2) {
+            if(this.lastDy < gestureState.dy){
+                console.log('亮度-----')
+            }else {
+                console.log('亮度+++++')
+            }
+            this.lastDy = gestureState.dy
+        }else {
+            if(this.lastDy < gestureState.dy){
+                console.log('声音-----')
+                // this.setState({
+                //     volume:gestureState.dy / height
+                // })
+            }else {
+                console.log('声音+++++')
+                // this.setState({
+                //     volume:gestureState.dy / height * -1
+                // })
+            }
+            this.lastDy = gestureState.dy
+        }
     }
 
     render() {
@@ -59,7 +98,7 @@ export default class Index extends Base {
                                this.player = ref
                            }}                                      // Store reference
                            rate={1.0}                              // 控制暂停/播放，0 代表暂停paused, 1代表播放normal.
-                           volume={0.0}                            // 声音的放大倍数，0 代表没有声音，就是静音muted, 1 代表正常音量 normal，更大的数字表示放大的倍数
+                           volume={parseFloat(this.state.volume)}                            // 声音的放大倍数，0 代表没有声音，就是静音muted, 1 代表正常音量 normal，更大的数字表示放大的倍数
                            muted={false}                           // true代表静音，默认为false.
                            paused={this.state.isPaused}            // true代表暂停，默认为false
                            resizeMode={this.state.resizeMode}      // 视频的自适应伸缩铺放行为【cover，contain，stretch，center】
@@ -76,7 +115,7 @@ export default class Index extends Base {
                            onBuffer={this.onBuffer}                // 当远程视频缓冲时回调
                            onTimedMetadata={this.onTimedMetadata}  // 当流接收一些元数据时回调
                            style={styles.backgroundVideo}/>
-                    <View style={styles.backgroundVideo}>
+                    <View {...this._panResponder.panHandlers} style={styles.backgroundVideo}>
                         <TouchableOpacity onPress={() => {
                             this.goBack()
                         }}>

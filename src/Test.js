@@ -3,56 +3,59 @@ import {
     AppRegistry,
     Text, View, Button,
     StyleSheet,
-    Image
+    Image,
+    Dimensions,
+    PanResponder
 } from 'react-native';
 
 import {StackNavigator, TabNavigator} from 'react-navigation';
-
+const {width, height}  = Dimensions.get('window')
 
 class MyHomeScreen extends React.Component {
     static navigationOptions = {
         tabBarLabel: 'Home',
-        // Note: By default the icon is only shown on iOS. Search the showIcon option below.
-        tabBarIcon: ({tintColor}) => (
-            <Image
-                source={require('./../assets/splash.png')}
-                style={[styles.icon, {tintColor: tintColor}]}
-            />
-        ),
     };
+
+
+    componentWillMount() {
+        this._panResponder = PanResponder.create({
+            onStartShouldSetPanResponder: (evt, gestureState) => true,
+            onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+            onMoveShouldSetPanResponder: (evt, gestureState) => true,
+            onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+            onPanResponderMove: this._handlePanResponderMove,
+        });
+    }
 
     render() {
         return (
-            <Button
-                onPress={() => this.props.navigation.navigate('Notifications')}
-                title="Go to notifications"
-            />
-        );
-    }
-}
+            <View style={{width: width, height: height, backgroundColor: 'pink'}}
+                  {...this._panResponder.panHandlers}>
 
-class MyNotificationsScreen extends React.Component {
-    static navigationOptions = {
-        tabBarLabel: 'Notifications',
-        tabBarIcon: ({tintColor}) => (
-            <View>
-                <Image
-                    source={require('./../assets/splash.png')}
-                    style={[styles.icon, {tintColor: tintColor}]}
-                />
-                <Text style={{position:'absolute',backgroundColor:'yellow',fontSize:12}}>9</Text>
             </View>
-        ),
-    };
-
-    render() {
-        return (
-            <Button
-                onPress={() => this.props.navigation.goBack()}
-                title="Go back home"
-            />
         );
     }
+
+    _handlePanResponderMove = (e,gestureState)=>{
+        if(gestureState.x0 < width/2) {
+            // console.log('亮度')
+            if(this.lastDy < gestureState.dy){
+                console.log('亮度-----')
+            }else {
+                console.log('亮度+++++')
+            }
+            this.lastDy = gestureState.dy
+        }else {
+            if(this.lastDy < gestureState.dy){
+                console.log('声音-----')
+            }else {
+                console.log('声音+++++')
+            }
+            this.lastDy = gestureState.dy
+        }
+    }
+
+
 }
 
 const styles = StyleSheet.create({
@@ -62,12 +65,9 @@ const styles = StyleSheet.create({
     },
 });
 
-const MyApp = TabNavigator({
+const MyApp = StackNavigator({
     Home: {
         screen: MyHomeScreen,
-    },
-    Notifications: {
-        screen: MyNotificationsScreen,
     },
 }, {
     tabBarOptions: {
