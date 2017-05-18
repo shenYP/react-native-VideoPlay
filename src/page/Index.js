@@ -15,10 +15,15 @@ import {
 import {StackNavigator, TabNavigator} from 'react-navigation'
 
 import PlayPage from './PlayPage'
+import Orientation from 'react-native-orientation';
 
 class Index extends Component {
     static navigationOptions = {
         title: '主页',
+    }
+
+    componentDidMount() {
+        Orientation.lockToPortrait();//只允许竖屏
     }
 
     render() {

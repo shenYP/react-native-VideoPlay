@@ -29,7 +29,7 @@ export default class WelComePage extends Component {
     render() {
         return (
             <View>
-                <Image source={require('./../../assets/splash.png')} style={{width: width, height: height}}/>
+                <Image source={require('./../../assets/image/splash.png')} style={{width: width, height: height}}/>
             </View>
         )
     }
