@@ -109,7 +109,7 @@ export default class Index extends Base {
                            ref={(ref) => {
                                this.player = ref
                            }}                                      // Store reference
-                           rate={1.0}                              // 控制暂停/播放，0 代表暂停paused, 1代表播放normal.
+                           rate={1.0}                              // 播放速度
                            volume={parseFloat(this.state.volume)}                            // 声音的放大倍数，0 代表没有声音，就是静音muted, 1 代表正常音量 normal，更大的数字表示放大的倍数
                            muted={false}                           // true代表静音，默认为false.
                            paused={this.state.isPaused}            // true代表暂停，默认为false
