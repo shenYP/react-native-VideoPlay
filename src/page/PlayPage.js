@@ -36,8 +36,9 @@ export default class Index extends Base {
             duration: 0,//视频总时长
             progress: 0,//当前播放进度
             sliderValue: 0.0,//进度条进度
-            volume:0.0,//声音大小
+            volume: 0.0,//声音大小
         };
+        this.lastVolume = 0;
     }
 
     static navigationOptions = {
@@ -55,34 +56,45 @@ export default class Index extends Base {
             onMoveShouldSetPanResponder: (evt, gestureState) => true,
             onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
             onPanResponderMove: this._handlePanResponderMove,
+            onPanResponderStart: this._handlePanResponderStart,
         });
     }
 
-    _handlePanResponderMove = (e,gestureState)=>{
-        console.log(gestureState.dy / height)
-
-
-        if(gestureState.x0 < width/2) {
-            if(this.lastDy < gestureState.dy){
+    _handlePanResponderMove = (e, gestureState) => {
+        if (gestureState.x0 < width / 2) {
+            if (this.lastDy < gestureState.dy) {
                 console.log('亮度-----')
-            }else {
+            } else {
                 console.log('亮度+++++')
             }
             this.lastDy = gestureState.dy
-        }else {
-            if(this.lastDy < gestureState.dy){
-                console.log('声音-----')
-                // this.setState({
-                //     volume:gestureState.dy / height
-                // })
-            }else {
-                console.log('声音+++++')
-                // this.setState({
-                //     volume:gestureState.dy / height * -1
-                // })
+        } else {
+            let volume = gestureState.moveY / height
+            if (this.volumeStartY < gestureState.moveY) {//声音------
+                let distance = volume - this.volumeStartY / height
+                let value = this.lastVolume - distance
+                if (value < 0) {
+                    value = 0
+                }
+                this.setState({
+                    volume: value
+                })
+            } else {//声音+++++
+                let distance = this.volumeStartY / height - volume
+                let value = this.lastVolume + distance
+                if (value > 1) {
+                    value = 1
+                }
+                this.setState({
+                    volume: value
+                })
             }
-            this.lastDy = gestureState.dy
         }
+    }
+
+    _handlePanResponderStart = (e, gestureState) => {
+        this.lastVolume = this.state.volume//记录最后一次的声音值
+        this.volumeStartY = gestureState.y0//记录点击时候的y轴坐标，用来判断增加或减少音量
     }
 
     render() {
