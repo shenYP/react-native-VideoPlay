@@ -128,6 +128,8 @@ export default class Index extends Base {
                            onTimedMetadata={this.onTimedMetadata}  // 当流接收一些元数据时回调
                            style={styles.backgroundVideo}/>
                     <View {...this._panResponder.panHandlers} style={styles.backgroundVideo}>
+                    </View>
+                    <View style={styles.optionView}>
                         <TouchableOpacity onPress={() => {
                             this.goBack()
                         }}>
@@ -270,6 +272,8 @@ var styles = StyleSheet.create({
         bottom: 0,
         width: width,
         padding: 10,
+        height:90,
+        top:height-90
     },
     next_img: {
         marginLeft: 10
@@ -287,5 +291,7 @@ var styles = StyleSheet.create({
     progressTv: {
         backgroundColor: 'transparent',
         color: 'white'
+    },
+    optionView:{
     }
 });
